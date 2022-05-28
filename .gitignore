@@ -1,0 +1,6 @@
+*.snap
+.vscode
+.DS_Store
+*.log*
+*.bak*
+squashfs-root

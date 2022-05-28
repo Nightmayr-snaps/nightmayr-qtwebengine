@@ -1,0 +1,138 @@
+---
+name: nightmayr-qtwebengine-5-15-9-2004
+version: 5.15.9
+base: core20
+summary: QtWebengine to be used as a stage snap by Qt content snap
+description: |
+ This snap contains the necessary libraries required by
+ Qt Applications.
+confinement: strict
+grade: stable
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+parts:
+    patches:
+        plugin: dump
+        source: snap/local/patches
+        source-type: local
+        prime:
+        - -*
+    qtconf:
+        plugin: nil
+        override-build: |
+            SDK=/snap/nightmayr-qt-5-15-4-2004-sdk/current
+            install -d "$SNAPCRAFT_PART_INSTALL/usr/include/$SNAPCRAFT_ARCH_TRIPLET"
+            cp -a $SDK/usr/include/$SNAPCRAFT_ARCH_TRIPLET/qt5 "$SNAPCRAFT_PART_INSTALL/usr/include/$SNAPCRAFT_ARCH_TRIPLET"
+            install -d "$SNAPCRAFT_PART_INSTALL/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
+            cp -a $SDK/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5 "$SNAPCRAFT_PART_INSTALL/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
+            cat << EOF > "$SNAPCRAFT_PART_INSTALL/qt.conf"
+            [Paths]
+            Prefix=$SNAPCRAFT_PART_INSTALL/usr
+            ArchData=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5
+            Binaries=lib/qt5/bin
+            Data=share/qt5
+            Documentation=share/qt5/doc
+            Examples=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/examples
+            Headers=$SNAPCRAFT_STAGE/usr/include/$SNAPCRAFT_ARCH_TRIPLET/qt5
+            HostBinaries=lib/qt5/bin
+            HostData=$SNAPCRAFT_STAGE/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5
+            HostLibraries=lib/$SNAPCRAFT_ARCH_TRIPLET
+            Imports=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/imports
+            Libraries=lib/$SNAPCRAFT_ARCH_TRIPLET
+            LibraryExecutables=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/libexec
+            Plugins=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/plugins
+            Qml2Imports=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/qml
+            Settings=/etc/xdg
+            Translations=share/qt5/translations
+            EOF
+        prime:
+        - -*
+    qtwebengine:
+        source: git://code.qt.io/qt/qtwebengine.git
+        source-tag: v$SNAPCRAFT_PROJECT_VERSION-lts
+        plugin: nil
+        build-environment:
+        - LD_LIBRARY_PATH: $SNAPCRAFT_STAGE/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$LD_LIBRARY_PATH
+        - PATH: $SNAPCRAFT_STAGE/usr/bin:$PATH
+        override-pull: |
+            snapcraftctl pull
+            find $SNAPCRAFT_STAGE/qtwebengine_5_15_9 -type f -print0 | sort -z | xargs -r0 git apply
+        override-build: |
+            if [ $SNAPCRAFT_TARGET_ARCH != "ppc64el" ]; then
+                # Setting number of build jobs to a safe number to prevent running out of memory during QtWebengine build
+                memtotal=$(cat /proc/meminfo | awk '{print $2}' | head -n1)
+                roundedmem=$(python3 -c "print(round($memtotal/1024000.0))")
+                maxcoresformem=$(python3 -c "print(max(1, int(($roundedmem / 2)-1)))")
+                numcoreslow=$(python3 -c "print(min($maxcoresformem, $SNAPCRAFT_PARALLEL_BUILD_COUNT))")
+                /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/lib/qt5/bin/qmake QMAKE_PYTHON2=python2 -qtconf "$SNAPCRAFT_STAGE/qt.conf"
+                make -I /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/include -j$numcoreslow NINJAJOBS=-j$numcoreslow
+                make INSTALL_ROOT="$SNAPCRAFT_PART_INSTALL/tmp" install
+                cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SNAPCRAFT_STAGE/." "$SNAPCRAFT_PART_INSTALL"
+                rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
+            else
+                echo "QtWebengine can not be built for ppc64el, skipping"
+                exit 0
+            fi
+        build-snaps:
+        - nightmayr-qt-5-15-4-2004-sdk/latest/candidate
+        build-packages:
+        - python3
+        - flex
+        - gperf
+        - bison
+        - python2
+        - node-less
+        - libnss3-dev
+        - libxcb-render0-dev
+        - libxcb-image0-dev
+        - libxcb-shape0-dev
+        - libxcb-sync-dev
+        - libxcb-render-util0-dev
+        - libxcb1-dev
+        - libxcb-xfixes0-dev
+        - libxcb-icccm4-dev
+        - libxcb-keysyms1-dev
+        - libxcb-shm0-dev
+        - libxrender-dev
+        - libpulse-dev
+        - libasound2-dev
+        - libaudio-dev
+        - libcups2-dev
+        - libdbus-1-dev
+        - libfreetype6-dev
+        - libgl1-mesa-dev
+        - libglib2.0-dev
+        - libegl1-mesa-dev
+        - libglu1-mesa-dev
+        - libice-dev
+        - libjpeg-dev
+        - libmng-dev
+        - libpng-dev
+        - libsm-dev
+        - libsqlite3-dev
+        - libssl-dev
+        - libtiff5-dev
+        - libx11-dev
+        - libxcursor-dev
+        - libxext-dev
+        - libxft-dev
+        - libxi-dev
+        - libxinerama-dev
+        - libxmu-dev
+        - libxrandr-dev
+        - libxt-dev
+        - libxv-dev
+        - zlib1g-dev
+        - libedit-dev
+        - libwayland-dev
+        - libwayland-egl1-mesa
+        - libmtdev-dev
+        - libudev-dev
+        - libxkbcommon-dev
+        - libxcomposite-dev
+        - libvulkan-dev
+        after:
+        - patches
+        - qtconf
