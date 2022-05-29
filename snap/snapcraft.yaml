@@ -121,6 +121,7 @@ parts:
         - libssl-dev
         - libtiff5-dev
         - libx11-dev
+        - libx11-xcb-dev
         - libxcursor-dev
         - libxext-dev
         - libxft-dev
