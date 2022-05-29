@@ -67,7 +67,7 @@ parts:
                 maxcoresformem=$(python3 -c "print(max(1, int(($roundedmem / 2)-1)))")
                 numcoreslow=$(python3 -c "print(min($maxcoresformem, $SNAPCRAFT_PARALLEL_BUILD_COUNT))")
                 /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/lib/qt5/bin/qmake QMAKE_PYTHON2=python2 -qtconf "$SNAPCRAFT_STAGE/qt.conf"
-                make -I /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/include -j$numcoreslow NINJAJOBS=-j$numcoreslow
+                make -j$numcoreslow NINJAJOBS=-j$numcoreslow
                 make INSTALL_ROOT="$SNAPCRAFT_PART_INSTALL/tmp" install
                 cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SNAPCRAFT_STAGE/." "$SNAPCRAFT_PART_INSTALL"
                 rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
