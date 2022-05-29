@@ -29,7 +29,7 @@ parts:
             cp -a $SDK/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5 "$SNAPCRAFT_PART_INSTALL/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
             cat << EOF > "$SNAPCRAFT_PART_INSTALL/qt.conf"
             [Paths]
-            Prefix=$SNAPCRAFT_PART_INSTALL/usr
+            Prefix=$SDK/usr
             ArchData=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5
             Binaries=lib/qt5/bin
             Data=share/qt5
@@ -85,6 +85,7 @@ parts:
         - python2
         - node-less
         - libnss3-dev
+        - libxkbcommon-x11-dev
         - libxcb-render0-dev
         - libxcb-image0-dev
         - libxcb-shape0-dev
@@ -96,6 +97,11 @@ parts:
         - libxcb-keysyms1-dev
         - libxcb-shm0-dev
         - libxrender-dev
+        - libxcb-xinerama0
+        - libdrm-dev
+        - libxkbfile-dev
+        - libxtst-dev
+        - libxdamage-dev
         - libpulse-dev
         - libasound2-dev
         - libaudio-dev
