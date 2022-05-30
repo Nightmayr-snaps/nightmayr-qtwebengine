@@ -139,6 +139,7 @@ parts:
         - libudev-dev
         - libxkbcommon-dev
         - libxcomposite-dev
+        - libgraphite2-dev
         - libvulkan-dev
         after:
         - patches
