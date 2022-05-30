@@ -70,7 +70,7 @@ parts:
                 make -j$numcoreslow NINJAJOBS=-j$numcoreslow
                 make INSTALL_ROOT="$SNAPCRAFT_PART_INSTALL/tmp" install
                 cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SNAPCRAFT_STAGE/." "$SNAPCRAFT_PART_INSTALL"
-                rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
+                # rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
             else
                 echo "QtWebengine can not be built for ppc64el, skipping"
                 exit 0
