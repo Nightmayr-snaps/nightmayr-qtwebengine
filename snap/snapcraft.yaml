@@ -60,21 +60,18 @@ parts:
             snapcraftctl pull
             find $SNAPCRAFT_STAGE/qtwebengine_5_15_9 -type f -print0 | sort -z | xargs -r0 git apply
         override-build: |
-            if [ $SNAPCRAFT_TARGET_ARCH != "ppc64el" ]; then
-                # Setting number of build jobs to a safe number to prevent running out of memory during QtWebengine build
-                memtotal=$(cat /proc/meminfo | awk '{print $2}' | head -n1)
-                roundedmem=$(python3 -c "print(round($memtotal/1024000.0))")
-                maxcoresformem=$(python3 -c "print(max(1, int(($roundedmem / 2)-1)))")
-                numcoreslow=$(python3 -c "print(min($maxcoresformem, $SNAPCRAFT_PARALLEL_BUILD_COUNT))")
-                /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/lib/qt5/bin/qmake QMAKE_PYTHON2=python2 -qtconf "$SNAPCRAFT_STAGE/qt.conf"
-                make -j$numcoreslow NINJAJOBS=-j$numcoreslow
-                make INSTALL_ROOT="$SNAPCRAFT_PART_INSTALL/tmp" install
-                cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SNAPCRAFT_STAGE/." "$SNAPCRAFT_PART_INSTALL"
-                # rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
-            else
-                echo "QtWebengine can not be built for ppc64el, skipping"
-                exit 0
-            fi
+            SDK=/snap/nightmayr-qt-5-15-4-2004-sdk/current
+            # Setting number of build jobs to a safe number to prevent running out of memory during QtWebengine build
+            memtotal=$(cat /proc/meminfo | awk '{print $2}' | head -n1)
+            roundedmem=$(python3 -c "print(round($memtotal/1024000.0))")
+            maxcoresformem=$(python3 -c "print(max(1, int(($roundedmem / 2)-1)))")
+            numcoreslow=$(python3 -c "print(min($maxcoresformem, $SNAPCRAFT_PARALLEL_BUILD_COUNT))")
+            /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/lib/qt5/bin/qmake QMAKE_PYTHON2=python2 -qtconf "$SNAPCRAFT_STAGE/qt.conf"
+            make -j$numcoreslow NINJAJOBS=-j$numcoreslow
+            make INSTALL_ROOT="$SNAPCRAFT_PART_INSTALL/tmp" install
+            cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SNAPCRAFT_STAGE/." "$SNAPCRAFT_PART_INSTALL"
+            cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SDK/." "$SNAPCRAFT_PART_INSTALL"
+            rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
         build-snaps:
         - nightmayr-qt-5-15-4-2004-sdk/latest/candidate
         build-packages:
