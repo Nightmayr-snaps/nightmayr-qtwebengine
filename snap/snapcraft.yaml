@@ -47,6 +47,9 @@ parts:
             Settings=/etc/xdg
             Translations=share/qt5/translations
             EOF
+        stage:
+        - -usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/plugins/designer/libqwebengineview.so
+        - -usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/qml/QtQuick/Pdf/libpdfplugin.so
         prime:
         - -*
     qtwebengine:
