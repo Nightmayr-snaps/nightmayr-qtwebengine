@@ -141,6 +141,8 @@ parts:
         - libxcomposite-dev
         - libgraphite2-dev
         - libvulkan-dev
+        stage-packages:
+        - libgraphite2-3
         after:
         - patches
         - qtconf
