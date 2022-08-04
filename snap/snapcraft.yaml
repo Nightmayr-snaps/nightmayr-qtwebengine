@@ -1,11 +1,10 @@
 ---
-name: nightmayr-qtwebengine-5-15-9-2004
-version: 5.15.9
-base: core20
+name: nightmayr-qtwebengine-5-15-10-2204
+version: 5.15.10
+base: core22
 summary: QtWebengine to be used as a stage snap by Qt content snap
 description: |
- This snap contains the necessary libraries required by
- Qt Applications.
+ This snap contains QtWebengine to be staged in the Qt SDK and content snaps.
 confinement: strict
 grade: stable
 architectures:
@@ -13,70 +12,65 @@ architectures:
   - build-on: arm64
   - build-on: armhf
 parts:
-    patches:
-        plugin: dump
-        source: snap/local/patches
-        source-type: local
-        prime:
-        - -*
     qtconf:
         plugin: nil
         override-build: |
-            SDK=/snap/nightmayr-qt-5-15-4-2004-sdk/current
-            install -d "$SNAPCRAFT_PART_INSTALL/usr/include/$SNAPCRAFT_ARCH_TRIPLET"
-            cp -a $SDK/usr/include/$SNAPCRAFT_ARCH_TRIPLET/qt5 "$SNAPCRAFT_PART_INSTALL/usr/include/$SNAPCRAFT_ARCH_TRIPLET"
-            install -d "$SNAPCRAFT_PART_INSTALL/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
-            cp -a $SDK/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5 "$SNAPCRAFT_PART_INSTALL/usr/lib/$SNAPCRAFT_ARCH_TRIPLET"
-            cat << EOF > "$SNAPCRAFT_PART_INSTALL/qt.conf"
+            SDK=/snap/nightmayr-qt-5-15-5-2204-sdk/current
+            install -d "$CRAFT_PART_INSTALL/usr/include/$CRAFT_ARCH_TRIPLET"
+            cp -a $SDK/usr/include/$CRAFT_ARCH_TRIPLET/qt5 "$CRAFT_PART_INSTALL/usr/include/$CRAFT_ARCH_TRIPLET"
+            install -d "$CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET"
+            cp -a $SDK/usr/lib/$CRAFT_ARCH_TRIPLET/qt5 "$CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET"
+            cat << EOF > "$CRAFT_PART_INSTALL/qt.conf"
             [Paths]
             Prefix=$SDK/usr
-            ArchData=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5
+            ArchData=lib/$CRAFT_ARCH_TRIPLET/qt5
             Binaries=lib/qt5/bin
             Data=share/qt5
             Documentation=share/qt5/doc
-            Examples=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/examples
-            Headers=$SNAPCRAFT_STAGE/usr/include/$SNAPCRAFT_ARCH_TRIPLET/qt5
+            Examples=lib/$CRAFT_ARCH_TRIPLET/qt5/examples
+            Headers=$CRAFT_STAGE/usr/include/$CRAFT_ARCH_TRIPLET/qt5
             HostBinaries=lib/qt5/bin
-            HostData=$SNAPCRAFT_STAGE/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5
-            HostLibraries=lib/$SNAPCRAFT_ARCH_TRIPLET
-            Imports=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/imports
-            Libraries=lib/$SNAPCRAFT_ARCH_TRIPLET
-            LibraryExecutables=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/libexec
-            Plugins=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/plugins
-            Qml2Imports=lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/qml
+            HostData=$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET/qt5
+            HostLibraries=lib/$CRAFT_ARCH_TRIPLET
+            Imports=lib/$CRAFT_ARCH_TRIPLET/qt5/imports
+            Libraries=lib/$CRAFT_ARCH_TRIPLET
+            LibraryExecutables=lib/$CRAFT_ARCH_TRIPLET/qt5/libexec
+            Plugins=lib/$CRAFT_ARCH_TRIPLET/qt5/plugins
+            Qml2Imports=lib/$CRAFT_ARCH_TRIPLET/qt5/qml
             Settings=/etc/xdg
             Translations=share/qt5/translations
             EOF
         stage:
-        - -usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/plugins/designer/libqwebengineview.so
-        - -usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/qml/QtQuick/Pdf/libpdfplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/plugins/designer/libqwebengineview.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/qml/QtQuick/Pdf/libpdfplugin.so
         prime:
         - -*
     qtwebengine:
+        after: [ qtconf ]
         source: git://code.qt.io/qt/qtwebengine.git
         source-tag: v$SNAPCRAFT_PROJECT_VERSION-lts
         plugin: nil
         build-environment:
-        - LD_LIBRARY_PATH: $SNAPCRAFT_STAGE/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$LD_LIBRARY_PATH
-        - PATH: $SNAPCRAFT_STAGE/usr/bin:$PATH
+        - LD_LIBRARY_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+        - PATH: $CRAFT_STAGE/usr/bin:$PATH
         override-pull: |
-            snapcraftctl pull
-            find $SNAPCRAFT_STAGE/qtwebengine_5_15_9 -type f -print0 | sort -z | xargs -r0 git apply
+            craftctl default
+            find $CRAFT_PROJECT_DIR/snap/local/patches/qtwebengine_5_15_10 -type f -print0 | sort -z | xargs -r0 git apply
         override-build: |
-            SDK=/snap/nightmayr-qt-5-15-4-2004-sdk/current
+            SDK=/snap/nightmayr-qt-5-15-5-2204-sdk/current
             # Setting number of build jobs to a safe number to prevent running out of memory during QtWebengine build
             memtotal=$(cat /proc/meminfo | awk '{print $2}' | head -n1)
             roundedmem=$(python3 -c "print(round($memtotal/1024000.0))")
             maxcoresformem=$(python3 -c "print(max(1, int(($roundedmem / 2)-2)))")
-            numcoreslow=$(python3 -c "print(min($maxcoresformem, $SNAPCRAFT_PARALLEL_BUILD_COUNT))")
-            /snap/nightmayr-qt-5-15-4-2004-sdk/current/usr/lib/qt5/bin/qmake QMAKE_PYTHON2=python2 -qtconf "$SNAPCRAFT_STAGE/qt.conf"
+            numcoreslow=$(python3 -c "print(min($maxcoresformem, $CRAFT_PARALLEL_BUILD_COUNT))")
+            $SDK/usr/lib/qt5/bin/qmake QMAKE_PYTHON2=python2 -qtconf "$CRAFT_STAGE/qt.conf"
             make -j$numcoreslow NINJAJOBS=-j$numcoreslow
-            make INSTALL_ROOT="$SNAPCRAFT_PART_INSTALL/tmp" install
-            cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SNAPCRAFT_STAGE/." "$SNAPCRAFT_PART_INSTALL"
-            cp -a "$SNAPCRAFT_PART_INSTALL/tmp$SDK/." "$SNAPCRAFT_PART_INSTALL"
-            rm -r "$SNAPCRAFT_PART_INSTALL/tmp"
+            make INSTALL_ROOT="$CRAFT_PART_INSTALL/tmp" install
+            cp -a "$CRAFT_PART_INSTALL/tmp$CRAFT_STAGE/." "$CRAFT_PART_INSTALL"
+            cp -a "$CRAFT_PART_INSTALL/tmp$SDK/." "$CRAFT_PART_INSTALL"
+            rm -r "$CRAFT_PART_INSTALL/tmp"
         build-snaps:
-        - nightmayr-qt-5-15-4-2004-sdk/latest/candidate
+        - nightmayr-qt-5-15-5-2204-sdk/latest/candidate
         build-packages:
         - python3
         - flex
@@ -141,8 +135,3 @@ parts:
         - libxcomposite-dev
         - libgraphite2-dev
         - libvulkan-dev
-        stage-packages:
-        - libgraphite2-3
-        after:
-        - patches
-        - qtconf
