@@ -44,10 +44,14 @@ parts:
               --log-level=STATUS
             cmake --build . -- -j$numcoreslow
             cmake --build . --target install
+            if [ $CRAFT_TARGET_ARCH = "armhf" ]; then
+              execstack --clear-execstack $CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET/libQt6WebEngineCore.so.*
+            fi
         build-snaps:
         - cmake
         - nightmayr-qt-6-3-1-2204-sdk/latest/candidate
         build-packages:
+        - execstack
         - python3
         - flex
         - gperf
