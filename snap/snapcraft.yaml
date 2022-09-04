@@ -18,8 +18,9 @@ parts:
         plugin: cmake
         cmake-generator: Ninja
         build-environment:
-        - LD_LIBRARY_PATH: $CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+        - LD_LIBRARY_PATH: /snap/nightmayr-qt-6-3-1-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:$CRAFT_STAGE/usr/lib/$CRAFT_ARCH_TRIPLET${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
         - PKG_CONFIG_PATH: /snap/nightmayr-qt-6-3-1-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:${PKG_CONFIG_PATH:+:PKG_CONFIG_PATH}
+        - LDFLAGS: "-L/snap/nightmayr-qt-6-3-1-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET"
         override-build: |
             # Setting number of build jobs to a safe number to prevent running out of memory during QtWebengine build
             memtotal=$(cat /proc/meminfo | awk '{print $2}' | head -n1)
