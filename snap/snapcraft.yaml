@@ -135,3 +135,15 @@ parts:
         - libxcomposite-dev
         - libgraphite2-dev
         - libvulkan-dev
+    conditioning:
+      after: [ qtwebengine ]
+      plugin: nil
+      override-prime: |
+        set -eux
+        snapcraftctl prime
+        for PC in $(find . -path "*/pkgconfig/*.pc")
+        do
+          sed -i 's#exec_prefix=/usr#exec_prefix=${prefix}#' $PC
+          sed -i 's#includedir=$SNAPCRAFT_STAGE/usr#includedir=${prefix}#' $PC
+          sed -i 's#/snap/nightmayr-qt-5-15-5-2204-sdk/current##g' $PC
+        done
