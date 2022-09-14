@@ -15,7 +15,7 @@ parts:
     qtconf:
         plugin: nil
         override-build: |
-            SDK=/snap/nightmayr-qt-5-15-5-2204-sdk/current
+            SDK=/snap/nightmayr-qt-5-15-6-2204-sdk/current
             install -d "$CRAFT_PART_INSTALL/usr/include/$CRAFT_ARCH_TRIPLET"
             cp -a $SDK/usr/include/$CRAFT_ARCH_TRIPLET/qt5 "$CRAFT_PART_INSTALL/usr/include/$CRAFT_ARCH_TRIPLET"
             install -d "$CRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET"
@@ -57,7 +57,7 @@ parts:
             craftctl default
             find $CRAFT_PROJECT_DIR/snap/local/patches/qtwebengine_5_15_10 -type f -print0 | sort -z | xargs -r0 git apply
         override-build: |
-            SDK=/snap/nightmayr-qt-5-15-5-2204-sdk/current
+            SDK=/snap/nightmayr-qt-5-15-6-2204-sdk/current
             # Setting number of build jobs to a safe number to prevent running out of memory during QtWebengine build
             memtotal=$(cat /proc/meminfo | awk '{print $2}' | head -n1)
             roundedmem=$(python3 -c "print(round($memtotal/1024000.0))")
@@ -70,7 +70,7 @@ parts:
             cp -a "$CRAFT_PART_INSTALL/tmp$SDK/." "$CRAFT_PART_INSTALL"
             rm -r "$CRAFT_PART_INSTALL/tmp"
         build-snaps:
-        - nightmayr-qt-5-15-5-2204-sdk/latest/candidate
+        - nightmayr-qt-5-15-6-2204-sdk/latest/candidate
         build-packages:
         - python3
         - flex
@@ -145,5 +145,5 @@ parts:
         do
           sed -i 's#exec_prefix=/usr#exec_prefix=${prefix}#' $PC
           sed -i 's#includedir=$SNAPCRAFT_STAGE/usr#includedir=${prefix}#' $PC
-          sed -i 's#/snap/nightmayr-qt-5-15-5-2204-sdk/current##g' $PC
+          sed -i 's#/snap/nightmayr-qt-5-15-6-2204-sdk/current##g' $PC
         done
