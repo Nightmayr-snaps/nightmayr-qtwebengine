@@ -140,10 +140,17 @@ parts:
       plugin: nil
       override-prime: |
         set -eux
-        snapcraftctl prime
+        craftctl default
+
         for PC in $(find . -path "*/pkgconfig/*.pc")
         do
           sed -i 's#exec_prefix=/usr#exec_prefix=${prefix}#' $PC
           sed -i 's#includedir=$SNAPCRAFT_STAGE/usr#includedir=${prefix}#' $PC
           sed -i 's#/snap/nightmayr-qt-5-15-6-2204-sdk/current##g' $PC
         done
+
+        sed -i 's#$CRAFT_STAGE/usr#${_qt5WebEngineCore_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngineCore/Qt5WebEngineCoreConfig.cmake
+        sed -i 's#$CRAFT_STAGE/usr#${_qt5Pdf_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5Pdf/Qt5PdfConfig.cmake
+        sed -i 's#$CRAFT_STAGE/usr#${_qt5PdfWidgets_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5PdfWidgets/Qt5PdfWidgetsConfig.cmake
+        sed -i 's#$CRAFT_STAGE/usr#${_qt5WebEngine_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngine/Qt5WebEngineConfig.cmake
+        sed -i 's#$CRAFT_STAGE/usr#${_qt5WebEngineWidgets_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngineWidgets/Qt5WebEngineWidgetsConfig.cmake
