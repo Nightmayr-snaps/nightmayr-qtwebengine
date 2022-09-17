@@ -43,6 +43,9 @@ parts:
         stage:
         - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/plugins/designer/libqwebengineview.so
         - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/qml/QtQuick/Pdf/libpdfplugin.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/libexec/QtWebEngineProcess
+        - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/plugins/imageformats/libqpdf.so
+        - -usr/lib/$CRAFT_ARCH_TRIPLET/qt5/qml/QtWebEngine/libqtwebengineplugin.so
         prime:
         - -*
     qtwebengine:
