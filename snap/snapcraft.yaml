@@ -157,3 +157,9 @@ parts:
         sed -i 's#$CRAFT_STAGE/usr#${_qt5PdfWidgets_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5PdfWidgets/Qt5PdfWidgetsConfig.cmake
         sed -i 's#$CRAFT_STAGE/usr#${_qt5WebEngine_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngine/Qt5WebEngineConfig.cmake
         sed -i 's#$CRAFT_STAGE/usr#${_qt5WebEngineWidgets_install_prefix}#g' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngineWidgets/Qt5WebEngineWidgetsConfig.cmake
+        sed -i 's#5.15.10 ${_Qt5WebEngineCore_FIND_VERSION_EXACT}#5.15.6 ${_Qt5WebEngineCore_FIND_VERSION_EXACT}#' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngineCore/Qt5WebEngineCoreConfig.cmake
+        sed -i 's#5.15.10 ${_Qt5Pdf_FIND_VERSION_EXACT}#5.15.6 ${_Qt5Pdf_FIND_VERSION_EXACT}#' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5Pdf/Qt5PdfConfig.cmake
+        sed -i 's#5.15.10 ${_Qt5PdfWidgets_FIND_VERSION_EXACT}#5.15.6 ${_Qt5PdfWidgets_FIND_VERSION_EXACT}#' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5PdfWidgets/Qt5PdfWidgetsConfig.cmake
+        sed -i 's#5.15.10 ${_Qt5WebEngine_FIND_VERSION_EXACT}#5.15.6 ${_Qt5WebEngine_FIND_VERSION_EXACT}#' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngine/Qt5WebEngineConfig.cmake
+        sed -i 's#5.15.10 ${_Qt5WebEngineWidgets_FIND_VERSION_EXACT}#5.15.6 ${_Qt5WebEngineWidgets_FIND_VERSION_EXACT}#' usr/lib/$CRAFT_ARCH_TRIPLET/cmake/Qt5WebEngineWidgets/Qt5WebEngineWidgetsConfig.cmake
+
